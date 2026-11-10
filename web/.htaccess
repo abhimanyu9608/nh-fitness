@@ -1,0 +1,9 @@
+# PRD section 12 step 2.
+# Needed on Apache/cPanel hosting so path URLs like /plans survive a refresh.
+# Flutter copies everything in web/ into build/web/, so this ships with the build.
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

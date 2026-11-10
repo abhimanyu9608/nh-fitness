@@ -1,0 +1,121 @@
+// NH Fitness — Firestore security rules (PRD section 9).
+//
+// These rules are the security boundary for Phase 1: there are no Cloud
+// Functions, so everything a member can do is done straight from the client and
+// has to be checked here.
+//
+// Publish with:  Firebase Console -> Firestore -> Rules -> paste -> Publish
+// Test with:     cd rules-test && npm install && npm test
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+
+    // An owner is the gym's proprietor. Created by hand in the Console and
+    // never writable from the app, so staff can never promote themselves or
+    // lock the owner out.
+    function isOwner() {
+      return signedIn() && exists(/databases/$(database)/documents/owners/$(request.auth.uid));
+    }
+
+    // Owners are always admins, so an owner cannot lose the admin panel by
+    // removing their own entry from `admins`.
+    function isAdmin() {
+      return signedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        || exists(/databases/$(database)/documents/owners/$(request.auth.uid))
+      );
+    }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+    function settings() { return get(/databases/$(database)/documents/settings/app).data; }
+    function userDoc() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isActiveMember() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc().get('activeUntil', null) != null
+        && userDoc().activeUntil > request.time;
+    }
+
+    // Owner list: only created by hand in the Console. This is the root of
+    // trust — everything else can be managed from inside the app.
+    match /owners/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    // Staff list. Owners manage this from the admin panel; staff cannot add or
+    // remove each other, so one compromised staff login cannot entrench itself.
+    match /admins/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow create, update: if isOwner()
+        && request.resource.data.keys().hasOnly(['name', 'addedAt', 'addedBy'])
+        && request.resource.data.addedAt is timestamp
+        && request.resource.data.addedBy == request.auth.uid;
+      allow delete: if isOwner();
+    }
+
+    match /users/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      // Member creates own profile; admin-only fields must start at safe values.
+      allow create: if isSelf(uid)
+        && request.resource.data.keys().hasOnly(['name','email','phone','createdAt','hasJoined','ptFreeDaysUsed','updatedAt'])
+        && request.resource.data.hasJoined == false
+        && request.resource.data.ptFreeDaysUsed == 0;
+      // Member may only change name, phone, updatedAt. Admin may change anything.
+      allow update: if isAdmin()
+        || (isSelf(uid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name','phone','updatedAt']));
+      allow delete: if false;
+    }
+
+    match /plans/{planId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /paymentRequests/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+
+      // Member submits a pending request with prices that match Firestore.
+      allow create: if isAdmin() || (
+        signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.method in ['upi', 'cash']
+        && (request.resource.data.method == 'cash'
+            || (request.resource.data.upiRef is string && request.resource.data.upiRef.matches('^[0-9]{12}$')))
+        && request.resource.data.planPrice == get(/databases/$(database)/documents/plans/$(request.resource.data.planId)).data.price
+        && get(/databases/$(database)/documents/plans/$(request.resource.data.planId)).data.active == true
+        && request.resource.data.registrationFee in [0, settings().registrationFee]
+        && (userDoc().hasJoined == false || request.resource.data.registrationFee == 0)
+        && request.resource.data.ptFee == (request.resource.data.withPT ? settings().ptFee : 0)
+        && request.resource.data.total == request.resource.data.planPrice + request.resource.data.registrationFee + request.resource.data.ptFee
+        && !('membershipId' in request.resource.data)
+        && !('reviewedBy' in request.resource.data)
+      );
+      allow update, delete: if isAdmin();
+    }
+
+    match /memberships/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    match /classes/{id} {
+      // Queries from members must include where('published', '==', true).
+      allow read: if isAdmin() || (isActiveMember() && resource.data.published == true);
+      allow write: if isAdmin();
+    }
+
+    match /announcements/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

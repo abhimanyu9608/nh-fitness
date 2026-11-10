@@ -1,0 +1,16 @@
+{
+  "name": "nh-fitness-rules-test",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Firebase Emulator tests for firestore.rules (PRD section 9).",
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore --project nh-fitness-8a972 \"node --test\"",
+    "emulator": "firebase emulators:start --only firestore --project nh-fitness-8a972"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^12.0.0",
+    "firebase-tools": "^14.0.0"
+  }
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+    PRD section 12 step 1: the site is served from the domain root, so "/" is correct.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Train hard. Stay focused. Be strong. Gym membership at NH Fitness — plans, online classes and 7 days of personal training free with every new membership.">
+  <meta name="theme-color" content="#0D0A0B">
+
+  <!-- Social preview (PRD section 12 step 6). Swap the image URL for the gym's own photo. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NH Fitness">
+  <meta property="og:title" content="NH Fitness — Gym membership">
+  <meta property="og:description" content="Train hard. Stay focused. Be strong.">
+  <meta property="og:image" content="icons/Icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="NH Fitness">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>NH Fitness — Gym membership</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    /*
+      Dark background behind the Flutter canvas so the first paint is not white.
+      This is deliberately all there is: an HTML splash overlay has to be torn
+      down by a JS event, and if that event is ever missed the overlay covers
+      the whole app forever. The background colour gives the same benefit with
+      nothing to go wrong.
+    */
+    html, body { margin: 0; padding: 0; background-color: #0D0A0B; }
+  </style>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

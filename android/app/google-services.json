@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "379882726974",
+    "project_id": "nh-fitness-8a972",
+    "storage_bucket": "nh-fitness-8a972.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:379882726974:android:722e955035b886f80a936f",
+        "android_client_info": {
+          "package_name": "com.nhfitness.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "379882726974-2msrmd9giku5o86kar33uoommvlb7f03.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg1oTuVQ7OVk3M5Z1vdhf70NdVnldIGKc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "379882726974-2msrmd9giku5o86kar33uoommvlb7f03.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "379882726974-7ejdnb5r5slcvbjpsk8egehqos0be5ld.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nhfitness.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

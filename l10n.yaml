@@ -1,0 +1,7 @@
+# PRD section 13: every string lives in one ARB file so Hindi can be added later
+# by dropping in lib/l10n/app_hi.arb.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: L
+nullable-getter: false
