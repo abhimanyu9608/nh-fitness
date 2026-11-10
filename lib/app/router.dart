@@ -260,12 +260,11 @@ String? _redirect(Ref ref, GoRouterState state) {
     return '${Routes.login}?next=$next';
   }
 
-  if (loggedIn && needsAdmin) {
-    final isAdmin = ref.read(isAdminProvider);
-    // While the `admins/{uid}` read is still in flight, stay put — the
-    // redirect runs again when it lands.
-    if (isAdmin.hasValue && isAdmin.value == false) return Routes.account;
-  }
+  // A signed-in non-admin is deliberately *not* redirected away. Bouncing them
+  // to /account looks like the app is broken: the page they asked for silently
+  // becomes a different one. The admin shell shows them a plain explanation
+  // instead. The rules refuse every admin read and write regardless, so
+  // letting the route render costs nothing.
 
   const authPaths = [Routes.login, Routes.register, Routes.forgotPassword];
   if (loggedIn && authPaths.contains(path)) {

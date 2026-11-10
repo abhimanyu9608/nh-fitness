@@ -2454,14 +2454,32 @@ abstract class L {
   /// No description provided for @guardAdminOnlyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Admin only'**
+  /// **'YOU DO NOT HAVE ACCESS'**
   String get guardAdminOnlyTitle;
 
   /// No description provided for @guardAdminOnlyBody.
   ///
   /// In en, this message translates to:
-  /// **'This part of the app is for the gym’s staff.'**
+  /// **'The admin section is for the gym’s owner and staff. If you should have access, ask the owner to add you under Staff access.'**
   String get guardAdminOnlyBody;
+
+  /// No description provided for @guardAdminSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'You are signed in as {email}'**
+  String guardAdminSignedInAs(String email);
+
+  /// No description provided for @guardAdminWrongAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Using the wrong account? Log out and sign in with the one that has access.'**
+  String get guardAdminWrongAccount;
+
+  /// No description provided for @guardAdminLogOutSwitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out and switch account'**
+  String get guardAdminLogOutSwitch;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

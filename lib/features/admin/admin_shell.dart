@@ -6,6 +6,8 @@ import '../../app/router.dart';
 import '../../app/theme.dart';
 import '../../core/motion.dart';
 import '../../core/responsive.dart';
+import '../../core/widgets/app_shell.dart';
+import '../../core/widgets/nh_buttons.dart';
 import '../../core/widgets/nh_logo.dart';
 import '../../core/widgets/nh_card.dart';
 import '../../core/widgets/offline_bar.dart';
@@ -134,7 +136,10 @@ class _AdminTopBar extends StatelessWidget {
               children: [
                 const NHLogo(size: 24, showWordmark: false),
                 const SizedBox(width: 12),
-                Text(l.adminTitle, style: NHText.display(size: 24, color: NHColors.red)),
+                Text(
+                  l.adminTitle,
+                  style: NHText.display(size: 24, color: NHColors.red),
+                ),
                 const Spacer(),
                 if (context.bp.isMobile)
                   IconButton(
@@ -228,7 +233,8 @@ class AdminSideMenu extends ConsumerWidget {
           SideMenuTile(
             label: item.label,
             icon: item.icon,
-            active: path == item.path ||
+            active:
+                path == item.path ||
                 (item.path != Routes.admin && path.startsWith('${item.path}/')),
             badge: item.badge,
             onTap: () => go(item.path),
@@ -282,31 +288,125 @@ class _CountBadge extends StatelessWidget {
       ),
       child: Text(
         '$count',
-        style: NHText.moneyBody(size: 12.5, color: Colors.white, weight: FontWeight.w700),
+        style: NHText.moneyBody(
+          size: 12.5,
+          color: Colors.white,
+          weight: FontWeight.w700,
+        ),
       ),
     );
   }
 }
 
-class _NotAnAdmin extends StatelessWidget {
+/// Shown to a signed-in member who opens `/admin/*` without access.
+///
+/// Says plainly what happened and which account they are using — the usual
+/// cause is being signed in with a personal Google account rather than the
+/// one the gym granted access to, and without the email on screen that is
+/// invisible.
+class _NotAnAdmin extends ConsumerWidget {
   const _NotAnAdmin();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = L.of(context);
+    final email = ref.watch(authStateProvider).value?.email;
 
-    return Scaffold(
-      backgroundColor: NHColors.bg,
-      body: Center(
-        child: NHEmptyState(
-          message: '${l.guardAdminOnlyTitle}\n${l.guardAdminOnlyBody}',
-          icon: Icons.shield_outlined,
-          action: TextButton(
-            onPressed: () => context.go(Routes.account),
-            child: Text(l.navMyAccount, style: NHText.body(color: NHColors.red)),
+    return NHScaffold(
+      showFooter: false,
+      children: [
+        ContentWidth(
+          maxWidth: 620,
+          padVertical: const EdgeInsets.symmetric(vertical: 60),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FadeUp(
+                index: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: NHColors.selectedBg,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.lock_outline,
+                    size: 28,
+                    color: NHColors.red,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 22),
+              FadeUp(
+                index: 1,
+                child: SectionTitle(
+                  title: l.guardAdminOnlyTitle,
+                  subtitle: l.guardAdminOnlyBody,
+                ),
+              ),
+              const SizedBox(height: 24),
+              if (email != null)
+                FadeUp(
+                  index: 2,
+                  child: NHCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.person_outline,
+                              size: 18,
+                              color: NHColors.muted,
+                            ),
+                            const SizedBox(width: 9),
+                            Expanded(
+                              child: Text(
+                                l.guardAdminSignedInAs(email),
+                                style: NHText.body(
+                                  size: 15,
+                                  weight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l.guardAdminWrongAccount,
+                          style: NHText.body(size: 14, color: NHColors.muted),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 24),
+              FadeUp(
+                index: 3,
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    PrimaryButton(
+                      label: l.navMyAccount,
+                      expand: false,
+                      onPressed: () => context.go(Routes.account),
+                    ),
+                    GhostButton(
+                      label: l.guardAdminLogOutSwitch,
+                      icon: Icons.logout_outlined,
+                      onPressed: () async {
+                        await ref.read(authRepositoryProvider).signOut();
+                        if (context.mounted) context.go(Routes.login);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

@@ -451,6 +451,10 @@
   "notFoundTitle": "PAGE NOT FOUND",
   "notFoundBody": "The page you asked for does not exist. It may have moved.",
 
-  "guardAdminOnlyTitle": "Admin only",
-  "guardAdminOnlyBody": "This part of the app is for the gym’s staff."
+  "guardAdminOnlyTitle": "YOU DO NOT HAVE ACCESS",
+  "guardAdminOnlyBody": "The admin section is for the gym’s owner and staff. If you should have access, ask the owner to add you under Staff access.",
+  "guardAdminSignedInAs": "You are signed in as {email}",
+  "@guardAdminSignedInAs": { "placeholders": { "email": { "type": "String" } } },
+  "guardAdminWrongAccount": "Using the wrong account? Log out and sign in with the one that has access.",
+  "guardAdminLogOutSwitch": "Log out and switch account"
 }

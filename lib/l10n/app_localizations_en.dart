@@ -1306,9 +1306,21 @@ class LEn extends L {
       'The page you asked for does not exist. It may have moved.';
 
   @override
-  String get guardAdminOnlyTitle => 'Admin only';
+  String get guardAdminOnlyTitle => 'YOU DO NOT HAVE ACCESS';
 
   @override
   String get guardAdminOnlyBody =>
-      'This part of the app is for the gym’s staff.';
+      'The admin section is for the gym’s owner and staff. If you should have access, ask the owner to add you under Staff access.';
+
+  @override
+  String guardAdminSignedInAs(String email) {
+    return 'You are signed in as $email';
+  }
+
+  @override
+  String get guardAdminWrongAccount =>
+      'Using the wrong account? Log out and sign in with the one that has access.';
+
+  @override
+  String get guardAdminLogOutSwitch => 'Log out and switch account';
 }
