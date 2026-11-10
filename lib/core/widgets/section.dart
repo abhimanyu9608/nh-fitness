@@ -122,6 +122,7 @@ class NHGrid extends StatelessWidget {
     this.columns,
     this.spacing = 16,
     this.childAspectRatio,
+    this.stagger = false,
   });
 
   final List<Widget> children;
@@ -130,6 +131,15 @@ class NHGrid extends StatelessWidget {
   final int? columns;
   final double spacing;
   final double? childAspectRatio;
+
+  /// Reveals the cards one after another as the grid scrolls into view,
+  /// rather than the whole block appearing at once.
+  final bool stagger;
+
+  Widget _wrap({required int index, required Widget child}) {
+    if (!stagger) return child;
+    return RevealOnScroll(index: index, offset: 22, child: child);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,12 +153,18 @@ class NHGrid extends StatelessWidget {
           spacing: spacing,
           runSpacing: spacing,
           children: [
-            for (final child in children)
+            for (var i = 0; i < children.length; i++)
               SizedBox(
                 width: width > 0 ? width : constraints.maxWidth,
-                child: childAspectRatio == null
-                    ? child
-                    : AspectRatio(aspectRatio: childAspectRatio!, child: child),
+                child: _wrap(
+                  index: i,
+                  child: childAspectRatio == null
+                      ? children[i]
+                      : AspectRatio(
+                          aspectRatio: childAspectRatio!,
+                          child: children[i],
+                        ),
+                ),
               ),
           ],
         );

@@ -12,6 +12,12 @@ abstract final class NHMotion {
   static const entrance = Duration(milliseconds: 650);
   static const stagger = Duration(milliseconds: 100);
 
+  /// Gap between items revealing inside one grid or row.
+  static const revealStagger = Duration(milliseconds: 80);
+
+  /// Cross-fade when moving between routes.
+  static const pageTransition = Duration(milliseconds: 320);
+
   /// Logo barbell float.
   static const float = Duration(milliseconds: 2600);
 
@@ -118,10 +124,21 @@ class _RevealOnScrollState extends State<RevealOnScroll> {
     final top = box.localToGlobal(Offset.zero).dy;
     // Trigger a little before the block reaches the bottom edge so the motion
     // finishes while it is on screen.
-    if (top < MediaQuery.sizeOf(context).height * 0.92) {
+    if (top >= MediaQuery.sizeOf(context).height * 0.92) return;
+
+    _position?.removeListener(_check);
+
+    // Items in a row arrive one after another rather than all at once, which
+    // reads as deliberate instead of abrupt. Shorter than the entrance stagger
+    // because a grid can hold four of them.
+    final delay = NHMotion.revealStagger * widget.index;
+    if (delay == Duration.zero) {
       setState(() => _revealed = true);
-      _position?.removeListener(_check);
+      return;
     }
+    Future<void>.delayed(delay, () {
+      if (mounted) setState(() => _revealed = true);
+    });
   }
 
   @override

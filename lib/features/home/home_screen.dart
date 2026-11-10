@@ -315,6 +315,7 @@ class _WhySection extends StatelessWidget {
             SectionTitle(title: l.homeWhyTitle),
             const SizedBox(height: 30),
             NHGrid(
+              stagger: true,
               children: [
                 for (final feature in _features(l))
                   _FeatureCard(feature: feature),
@@ -413,6 +414,7 @@ class _MembershipSection extends ConsumerWidget {
                 }
                 return NHGrid(
                   columns: context.bp.isDesktop ? 4 : 2,
+                  stagger: true,
                   children: [
                     for (final plan in list) _HomePlanCard(plan: plan),
                   ],
@@ -713,6 +715,7 @@ class _MobileFeatureGrid extends StatelessWidget {
     return NHGrid(
       columns: 2,
       spacing: 12,
+      stagger: true,
       children: [
         for (final feature in _features(l))
           NHCard(

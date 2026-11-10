@@ -86,6 +86,7 @@ class ClassesScreen extends ConsumerWidget {
               index: 2,
               child: NHGrid(
                 columns: context.bp.isDesktop ? 3 : 2,
+                stagger: true,
                 children: [
                   for (final item in shown)
                     ClassGridCard(

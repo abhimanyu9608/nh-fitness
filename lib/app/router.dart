@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/motion.dart';
 import '../data/repositories/admin_repository.dart';
 import '../data/repositories/auth_repository.dart';
 import '../features/account/dashboard_screen.dart';
@@ -78,126 +79,179 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: Routes.home,
-        builder: (context, state) => const HomeScreen(),
+        pageBuilder: (context, state) => _page(state, const HomeScreen()),
       ),
       GoRoute(
         path: Routes.explore,
-        builder: (context, state) => const ExploreScreen(),
+        pageBuilder: (context, state) => _page(state, const ExploreScreen()),
       ),
       GoRoute(
         path: Routes.plans,
-        builder: (context, state) => PlansScreen(
-          planIdFromQuery: state.uri.queryParameters['plan'],
-          withPtFromQuery: _boolQuery(state.uri.queryParameters['pt']),
+        pageBuilder: (context, state) => _page(
+          state,
+          PlansScreen(
+            planIdFromQuery: state.uri.queryParameters['plan'],
+            withPtFromQuery: _boolQuery(state.uri.queryParameters['pt']),
+          ),
         ),
       ),
       GoRoute(
         path: Routes.checkout,
-        builder: (context, state) => CheckoutScreen(
-          planIdFromQuery: state.uri.queryParameters['plan'],
-          withPtFromQuery: _boolQuery(state.uri.queryParameters['pt']),
+        pageBuilder: (context, state) => _page(
+          state,
+          CheckoutScreen(
+            planIdFromQuery: state.uri.queryParameters['plan'],
+            withPtFromQuery: _boolQuery(state.uri.queryParameters['pt']),
+          ),
         ),
       ),
       GoRoute(
         path: Routes.checkoutSubmitted,
-        builder: (context, state) => const SubmittedScreen(),
+        pageBuilder: (context, state) => _page(state, const SubmittedScreen()),
       ),
       GoRoute(
         path: Routes.login,
-        builder: (context, state) =>
-            LoginScreen(next: state.uri.queryParameters['next']),
+        pageBuilder: (context, state) =>
+            _page(state, LoginScreen(next: state.uri.queryParameters['next'])),
       ),
       GoRoute(
         path: Routes.register,
-        builder: (context, state) =>
-            RegisterScreen(next: state.uri.queryParameters['next']),
+        pageBuilder: (context, state) => _page(
+          state,
+          RegisterScreen(next: state.uri.queryParameters['next']),
+        ),
       ),
       GoRoute(
         path: Routes.forgotPassword,
-        builder: (context, state) => const ForgotPasswordScreen(),
+        pageBuilder: (context, state) =>
+            _page(state, const ForgotPasswordScreen()),
       ),
       GoRoute(
         path: Routes.account,
-        builder: (context, state) => const DashboardScreen(),
+        pageBuilder: (context, state) => _page(state, const DashboardScreen()),
       ),
       GoRoute(
         path: Routes.accountClasses,
-        builder: (context, state) => const ClassesScreen(),
+        pageBuilder: (context, state) => _page(state, const ClassesScreen()),
       ),
       GoRoute(
         path: '${Routes.accountClasses}/:id',
-        builder: (context, state) =>
-            ClassPlayerScreen(classId: state.pathParameters['id'] ?? ''),
+        pageBuilder: (context, state) => _page(
+          state,
+          ClassPlayerScreen(classId: state.pathParameters['id'] ?? ''),
+        ),
       ),
       GoRoute(
         path: Routes.accountPayments,
-        builder: (context, state) => const PaymentsScreen(),
+        pageBuilder: (context, state) => _page(state, const PaymentsScreen()),
       ),
       GoRoute(
         path: Routes.accountProfile,
-        builder: (context, state) => const ProfileScreen(),
+        pageBuilder: (context, state) => _page(state, const ProfileScreen()),
       ),
       GoRoute(
         path: Routes.admin,
-        builder: (context, state) => const AdminDashboardScreen(),
+        pageBuilder: (context, state) =>
+            _page(state, const AdminDashboardScreen()),
       ),
       GoRoute(
         path: Routes.adminPayments,
-        builder: (context, state) => const AdminPaymentsScreen(),
+        pageBuilder: (context, state) =>
+            _page(state, const AdminPaymentsScreen()),
       ),
       GoRoute(
         path: Routes.adminMembers,
-        builder: (context, state) => AdminMembersScreen(
-          initialFilter: state.uri.queryParameters['filter'],
+        pageBuilder: (context, state) => _page(
+          state,
+          AdminMembersScreen(
+            initialFilter: state.uri.queryParameters['filter'],
+          ),
         ),
       ),
       GoRoute(
         path: '${Routes.adminMembers}/:uid',
-        builder: (context, state) =>
-            AdminMemberDetailScreen(uid: state.pathParameters['uid'] ?? ''),
+        pageBuilder: (context, state) => _page(
+          state,
+          AdminMemberDetailScreen(uid: state.pathParameters['uid'] ?? ''),
+        ),
       ),
       GoRoute(
         path: Routes.adminPlans,
-        builder: (context, state) => const AdminPlansScreen(),
+        pageBuilder: (context, state) => _page(state, const AdminPlansScreen()),
       ),
       GoRoute(
         path: Routes.adminClasses,
-        builder: (context, state) => const AdminClassesScreen(),
+        pageBuilder: (context, state) =>
+            _page(state, const AdminClassesScreen()),
       ),
       GoRoute(
         path: Routes.adminAnnouncements,
-        builder: (context, state) => const AdminAnnouncementsScreen(),
+        pageBuilder: (context, state) =>
+            _page(state, const AdminAnnouncementsScreen()),
       ),
       GoRoute(
         path: Routes.adminSettings,
-        builder: (context, state) => const AdminSettingsScreen(),
+        pageBuilder: (context, state) =>
+            _page(state, const AdminSettingsScreen()),
       ),
       GoRoute(
         path: Routes.adminStaff,
-        builder: (context, state) => const AdminStaffScreen(),
+        pageBuilder: (context, state) => _page(state, const AdminStaffScreen()),
       ),
       GoRoute(
         path: Routes.privacy,
-        builder: (context, state) => const LegalScreen(page: LegalPage.privacy),
+        pageBuilder: (context, state) =>
+            _page(state, const LegalScreen(page: LegalPage.privacy)),
       ),
       GoRoute(
         path: Routes.terms,
-        builder: (context, state) => const LegalScreen(page: LegalPage.terms),
+        pageBuilder: (context, state) =>
+            _page(state, const LegalScreen(page: LegalPage.terms)),
       ),
       GoRoute(
         path: Routes.refundPolicy,
-        builder: (context, state) => const LegalScreen(page: LegalPage.refund),
+        pageBuilder: (context, state) =>
+            _page(state, const LegalScreen(page: LegalPage.refund)),
       ),
     ],
   );
 });
+
+/// Every route fades and lifts slightly into place instead of cutting.
+///
+/// Respects "reduce motion" (PRD section 5.4) by handing back the page
+/// untouched, so the app still navigates instantly for anyone who asked for
+/// that.
+CustomTransitionPage<void> _page(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: NHMotion.pageTransition,
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      if (MediaQuery.disableAnimationsOf(context)) return child;
+      final curved = CurvedAnimation(parent: animation, curve: NHMotion.curve);
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween(
+            begin: const Offset(0, 0.015),
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
 
 String? _redirect(Ref ref, GoRouterState state) {
   final loggedIn = ref.read(currentUidProvider) != null;
   final path = state.uri.path;
 
   final needsMember = Routes.memberPrefixes.any(path.startsWith);
-  final needsAdmin = path == Routes.admin || path.startsWith('${Routes.admin}/');
+  final needsAdmin =
+      path == Routes.admin || path.startsWith('${Routes.admin}/');
 
   if (!loggedIn && (needsMember || needsAdmin)) {
     // The whole location, query included, so PRD PAY-5 can bring the member
